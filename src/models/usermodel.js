@@ -33,7 +33,7 @@
      address: {
          street: { type: String, },
          city: { type: String, },
-         pincode: { typee: String, },
+         pincode: { type: String, },
 
      }
  }, { timestamps: true });

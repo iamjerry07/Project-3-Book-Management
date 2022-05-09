@@ -26,7 +26,7 @@ const createUser = async(req, res) => {
 
         if (!validate.isValidField(address.city) && !(/^[a-zA-Z ]*$/.test(address.city))) return res.status(400).send({ status: false, message: "City name is reuired and should be Valid" })
 
-        if (!validate.isValidField(address.pincode) && !(/^[1-9]{1}[0-9]{2}\s{0,1}[0-9]{3}$/.test(address.city))) return res.status(400).send({ status: false, message: "Pin Code is reuired and should be Valid" })
+        if (!validate.isValidField(address.pincode) && !(/^[1-9]{1}[0-9]{2}\s{0,1}[0-9]{3,8}$/.test(address.city))) return res.status(400).send({ status: false, message: "Pin Code is reuired and should be Valid" })
 
         let validTitle = ['Mr', 'Mrs', 'Miss']
         if (!validTitle.includes(title)) return res.status(400).send({ status: false, Error: "Title must be Mr, Mrs or Miss" })
@@ -47,7 +47,7 @@ const createUser = async(req, res) => {
             return res.status(400).send({ status: false, message: `${email} is already used` })
         }
 
-        if (!(/^(?=.[a-z])(?=.[A-Z])(?=.\d)(?=.[#$@!%&?])[A-Za-z\d#$@!%&?]{1,30}$/.test(password))) return res.status(400).send({ status: false, message: "Password length should be min.8 and max.30" })
+        if (!(/^[a-zA-Z0-9!@#$%^&*]{8,30}$/.test(password))) return res.status(400).send({ status: false, message: "Password length should be min.8 and max.30" })
 
         let creatuser = await userModel.create(data)
 
