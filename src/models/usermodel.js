@@ -31,12 +31,12 @@
          required: true,
      },
      address: {
-         street: { type: String, trim: true },
-         city: { type: String, trim: true },
-         pincode: { typee: String, trim: true },
+         street: { type: String, },
+         city: { type: String, },
+         pincode: { typee: String, },
 
      }
- });
+ }, { timestamps: true });
  module.exports = mongoose.model('User', userSchema);
 
  //  {
