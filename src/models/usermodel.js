@@ -7,7 +7,7 @@
          enum: ["Mr", "Mrs", "Miss"],
          trim: true
      },
-     names: {
+     name: {
          type: String,
          requuired: true,
          trim: true
