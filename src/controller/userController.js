@@ -20,14 +20,16 @@ const createUser = async(req, res) => {
 
         if (!validate.isValidField(password)) return res.status(400).send({ status: false, message: "Password is required" })
 
-        if (!address || typeof address != 'object' || !validate.isValidRequestBody(address)) return res.status(400).send({ status: false, message: "Address is required , Cannot be empty and Should be an Object" })
+        if (address && typeof address == 'object' && validate.isValidRequestBody(address)) {
 
-        if (!validate.isValidField(address.street) && !(/^[a-zA-Z ]*$/.test(address.street))) return res.status(400).send({ status: false, message: "Street name is reuired and should be Valid" })
+            if (!validate.isValidField(address.street) && !(/^[a-zA-Z ]*$/.test(address.street))) return res.status(400).send({ status: false, message: "Street name is reuired and should be Valid" })
 
-        if (!validate.isValidField(address.city) && !(/^[a-zA-Z ]*$/.test(address.city))) return res.status(400).send({ status: false, message: "City name is reuired and should be Valid" })
+            if (!validate.isValidField(address.city) && !(/^[a-zA-Z ]*$/.test(address.city))) return res.status(400).send({ status: false, message: "City name is reuired and should be Valid" })
 
-        if (!validate.isValidField(address.pincode) && !(/^[1-9]{1}[0-9]{2}\s{0,1}[0-9]{3,8}$/.test(address.city))) return res.status(400).send({ status: false, message: "Pin Code is reuired and should be Valid" })
-
+            if (!validate.isValidField(address.pincode) && !(/^[1-9]{1}[0-9]{2}\s{0,1}[0-9]{3,8}$/.test(address.pincode))) return res.status(400).send({ status: false, message: "Pin Code is reuired and should be Valid" })
+        } else {
+            return res.status(400).send({ status: false, message: "Address is required , Cannot be empty and Should be an object" })
+        }
         let validTitle = ['Mr', 'Mrs', 'Miss']
         if (!validTitle.includes(title)) return res.status(400).send({ status: false, Error: "Title must be Mr, Mrs or Miss" })
 
