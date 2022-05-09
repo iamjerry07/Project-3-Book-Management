@@ -1,9 +1,10 @@
 const userModel = require('../models/userModel')
 const validate = require('../validators/validator')
+const jwt = require("jsonwebtoken")
 
 //Create User
 
-const createUser = async(req, res) => {
+const createUser = async (req, res) => {
     try {
         let data = req.body
         let { title, name, phone, email, password, address } = data
@@ -22,13 +23,13 @@ const createUser = async(req, res) => {
 
         if (address && typeof address == 'object' && validate.isValidRequestBody(address)) {
 
-            if (!validate.isValidField(address.street) && !(/^[a-zA-Z ]*$/.test(address.street))) return res.status(400).send({ status: false, message: "Street name is reuired and should be Valid" })
+            if (!validate.isValidField(address.street)) return res.status(400).send({ status: false, message: "Street name is reuired and should be Valid" })
 
-            if (!validate.isValidField(address.city) && !(/^[a-zA-Z ]*$/.test(address.city))) return res.status(400).send({ status: false, message: "City name is reuired and should be Valid" })
+            if (!validate.isValidField(address.city)) return res.status(400).send({ status: false, message: "City name is reuired and should be Valid" })
 
-            if (!validate.isValidField(address.pincode) && !(/^[1-9]{1}[0-9]{2}\s{0,1}[0-9]{3,8}$/.test(address.pincode))) return res.status(400).send({ status: false, message: "Pin Code is reuired and should be Valid" })
+            if (!validate.isValidField(address.pincode)) return res.status(400).send({ status: false, message: "Pin Code is reuired and should be Valid" })
         } else {
-            return res.status(400).send({ status: false, message: "Address is required , Cannot be empty and Should be an object" })
+            return res.status(400).send({ status: false, message: "Address is required, Cannot be empty and Should be an object" })
         }
         let validTitle = ['Mr', 'Mrs', 'Miss']
         if (!validTitle.includes(title)) return res.status(400).send({ status: false, Error: "Title must be Mr, Mrs or Miss" })
@@ -58,4 +59,37 @@ const createUser = async(req, res) => {
         res.status(500).send({ status: false, message: error.message })
     }
 }
+
+const login = async (req, res) => {
+    try {
+        let data = req.body
+        let { email, password } = data
+
+        if (!validate.isValidRequestBody(data)) return res.status(400).send({ status: false, message: "Data is required" })
+
+        if (!validate.isValidField(email)) return res.status(400).send({ status: false, message: "Email is required" })
+
+        if (!validate.isValidEmail(email)) return res.status(400).send({ status: false, message: `${email} is not a valid Email` })
+
+        if (!validate.isValidField(password)) return res.status(400).send({ status: false, message: "Password is required" })
+
+        let findData = await userModel.findOne({ email: email, password: password, isDeleted: false })
+
+        if (!validate.isValidField(findData)) return res.status(404).send({ status: false, message: "Invalid Email or Password" })
+
+        let userId = findData._id
+
+        let token = jwt.sign({ userId: userId }, "Uranium_project3_group10", { expiresIn: '1h' })
+
+        res.status(201).send({ status: true, message: "Token Sucessfully Created", data: token })
+    } catch (error) {
+        res.status(500).send({ status: false, message: error.message })
+    }
+}
+
+
+
+
+
 module.exports.createUser = createUser;
+module.exports.login = login
