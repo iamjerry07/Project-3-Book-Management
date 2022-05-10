@@ -9,7 +9,7 @@
      },
      name: {
          type: String,
-         requuired: true,
+         required: true,
          trim: true
      },
      phone: {
@@ -20,7 +20,7 @@
      },
      email: {
          type: String,
-         requred: true,
+         required: true,
          unique: true,
          trim: true
      },
