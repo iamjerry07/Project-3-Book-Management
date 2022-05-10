@@ -6,10 +6,18 @@ const router = express.Router();
 
 //  UserApi
 router.post('/createUser', userController.createUser);
+
 router.post('/login', userController.login)
 
 // BookAPI
 router.post('/createBook', bookController.createBook);
+
+//GET API BY QUERY
+
+router.get('/books', bookController.getDataByQuery)
+
+//GET API BY PATHPARAMS
+router.get('/books/:bookId', bookController.getDataByParams)
 
 //Delete Api
 router.delete('/deleteBook/:bookId', bookController.deleteBook)
