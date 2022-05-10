@@ -1,6 +1,10 @@
-const bookModel = require('../models/bookModel')
 const validate = require('../validators/validator')
+const bookModel = require('../models/bookModel')
+const reviewModel = require('../models/reviewModel')
 
+
+
+// CREATE BOOK API
 
 const createBook = async function(req, res){
    let data =  req.body
@@ -51,12 +55,35 @@ const createBook = async function(req, res){
       if (!validate.isValidField(releasedAt))
       return res.status(400).send({ status: false, message: "Released date is required" })
 
-
+// data creation
    let createdData = await bookModel.create(data)
    res.status(201).send({status:true,message: 'Success', data: createdData})
 }
 
 
+// GET BOOK BY ID API
+
+const getDataByParams = async (req,res) => {
+    try{
+        let id = req.params.bookId
+        if(!validate.isValidField(id)) return res.status(400).send({status :  false, message : "Book Id is Required"})
+        if(!mongoose.isValidObjectId(id)) return res.status(400),send({status : false, message : "Invalid Book Id"})
+
+        let findBookData = await bookModel.findOne({_id : id, isDeleted : false})
+        if(!validate.isValidField(findBookData)) return res.status(404).send("Dataa Not Found")
+
+        let findReviewData = await reviewModel.find({bookId : id, isDeleted : false}).select({isDeleted : 0})
+
+        findBookData.reviewsData = findReviewData
+
+        res.status(200).send({status : true, message : "Book List", data : findBookData})
+    }
+    catch(error){
+        res.status(500).send({status : false, message : error.message})
+    }
+}
+
 
 
 module.exports.createBook= createBook
+module.exports.getDataByParams= getDataByParams
