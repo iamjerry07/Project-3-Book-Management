@@ -1,7 +1,7 @@
 const validate = require('../validators/validator')
 const bookModel = require('../models/bookModel')
 const reviewModel = require('../models/reviewModel')
-
+const moment = require("moment")
 
 
 // CREATE BOOK API
@@ -55,6 +55,11 @@ const createBook = async function(req, res){
       if (!validate.isValidField(releasedAt))
       return res.status(400).send({ status: false, message: "Released date is required" })
 
+//regex check
+    if(!(/^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/.test(releasedAt))){
+        return res.status(400).send({status:false,message:"Released date check"})
+    }
+
 // data creation
    let createdData = await bookModel.create(data)
    res.status(201).send({status:true,message: 'Success', data: createdData})
@@ -83,7 +88,34 @@ const getDataByParams = async (req,res) => {
     }
 }
 
+// ==>
+const deleteBook = async function (req, res) {
+    try {
+      let bookIdToBeDeleted = req.params.bookId
+      
+      if(!bookIdToBeDeleted){       //Book-Id is entered or not
+        return res.status(400).send({ status: false, msg: "Book Id is not entered" })
+      }
+      let validBookId = await bookModel.findOne({ _id: bookIdToBeDeleted });
+      if (!validBookId) {     //Book-Id is valid or not
+        return res.status(400).send({ status: false, msg: "Book Id is invalid" })
+      }
+      let isDeletedStatus = await bookModel.findOne({ _id: bookIdToBeDeleted, isDeleted: false });
+      if (!isDeletedStatus) { //Check whether book-id is present or not
+        return res.status(404).send({ status: false, msg: "Book is ALready deleted" })
+      }
+      let deletedDate = moment().format("DD-MM-YYYY, hh:mm a") //deleted date to be shown using moment
+      
+  
+      let data = await bookModel.findByIdAndUpdate({ _id: bookIdToBeDeleted }, { isDeleted: true, deletedAt: deletedDate }, { new: true })
+  
+      return res.status(200).send({ status: true, msg: data })
+    }
+     catch (error) {
+      return res.status(500).send({ status: false, msg: error.message })
+    }
+  }
 
-
+module.exports.deleteBook = deleteBook
 module.exports.createBook= createBook
 module.exports.getDataByParams= getDataByParams

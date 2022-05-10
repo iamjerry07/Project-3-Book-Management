@@ -11,6 +11,8 @@ router.post('/login', userController.login)
 // BookAPI
 router.post('/createBook', bookController.createBook);
 
+//Delete Api
+router.delete('/deleteBook/:bookId', bookController.deleteBook)
 
 
 module.exports = router;
