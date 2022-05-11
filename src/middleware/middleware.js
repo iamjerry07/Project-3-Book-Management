@@ -7,9 +7,9 @@ const authentication = async function(req, res, next) {
         const decodedToken = jwt.verify(token, 'project3rd');
         if (!decodedToken) {
             return res.status(400).send({ status: false, msg: "Invalid user" });
-            req.validToken = decodedToken
-            next();
-        }
+           }   req.validToken = decodedToken.userID
+          next();
+        
 
 
     } catch (error) {

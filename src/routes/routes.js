@@ -23,6 +23,6 @@ router.get('/books/:bookId', bookController.getDataByParams)
 router.delete('/deleteBook/:bookId', bookController.deleteBook)
 
 // Update Api
-router.put('/updateBooksById', bookController.updateBooksById)
+router.put('/books/:bookId', bookController.updateBooksById)
 
 module.exports = router;
