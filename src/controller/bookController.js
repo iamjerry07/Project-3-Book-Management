@@ -13,7 +13,7 @@ const createBook = async function (req, res) {
     try {
         let data = req.body
         let { title, excerpt, userId, ISBN, category, subcategory, releasedAt } = data
-
+        console.log(data);
         //Empty body check
         if (!validate.isValidRequestBody(data))
             return res.status(400).send({ status: false, message: "Data is required" })
@@ -143,7 +143,7 @@ const deleteBook = async function (req, res) {
         if (!isDeletedStatus) { //Check whether book-id is present or not
             return res.status(404).send({ status: false, msg: "Book is ALready deleted" })
         }
-        let deletedDate = new Date //deleted date to be shown using moment
+        let deletedDate = new Date(); //deleted date to be shown using moment
 
 
         let data = await bookModel.findByIdAndUpdate({ _id: bookIdToBeDeleted }, 
