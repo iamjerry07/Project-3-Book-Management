@@ -11,6 +11,7 @@ const { locale } = require('moment');
 const createBook = async function (req, res) {
 
     try {
+        
         let data = req.body
         let { title, excerpt, userId, ISBN, category, subcategory, releasedAt } = data
         console.log(data);
@@ -21,9 +22,9 @@ const createBook = async function (req, res) {
         if (!validate.isValidField(title))
             return res.status(400).send({ status: false, message: "Title is required" })
 
-        let titleCheck = await bookModel.findOne({ title: data.title })
+        let titleCheck = await bookModel.findOne({ title: title })
         if (titleCheck) {
-            return res.send({ msg: `${titleCheck.title} Title already exists` })
+            return res.send({ msg: `${title} Title already exists` })
         }
         // Excerpt check
         if (!validate.isValidField(excerpt))
@@ -33,9 +34,9 @@ const createBook = async function (req, res) {
         if (!validate.isValidField(userId))
             return res.status(400).send({ status: false, message: "UserId is required" })
 
-        let userIDcheck = await bookModel.findOne({ userId: data.userId })
-        if (userIDcheck) {
-            return res.send({ msg: `${userIDcheck.userId} UserID already exists` })
+        let userIDcheck = await userModel.findOne({ userId: userId })
+        if (validate.isValidRequestBody(userIDcheck)) {
+            return res.send({ message: `${userId} UserID not found` })
         }
 
         // ISBN check
@@ -44,7 +45,7 @@ const createBook = async function (req, res) {
 
         let isbnCheck = await bookModel.findOne({ ISBN: data.ISBN })
         if (isbnCheck) {
-            return res.send({ msg: `${isbnCheck.ISBN} ISBN already exists` })
+            return res.send({ message: `${isbnCheck.ISBN} ISBN already exists` })
         }
 
         // category check
