@@ -15,6 +15,18 @@ const createBook = async function (req, res) {
         let data = req.body
         let { title, excerpt, userId, ISBN, category, subcategory, releasedAt } = data
         console.log(data);
+         // userID check
+        if (!validate.isValidField(userId))
+            return res.status(400).send({ status: false, message: "UserId is required" })
+
+        let userIDcheck = await userModel.findOne({ userId: userId })
+        if (validate.isValidRequestBody(userIDcheck)) {
+            return res.send({ message: `${userId} UserID not found` })
+        }
+        //Authorization
+        if(req.authorIdToken != userId){
+            return res.status(400).send({message:"User is not authorized"});
+        }
         //Empty body check
         if (!validate.isValidRequestBody(data))
             return res.status(400).send({ status: false, message: "Data is required" })
@@ -30,14 +42,7 @@ const createBook = async function (req, res) {
         if (!validate.isValidField(excerpt))
             return res.status(400).send({ status: false, message: "Excerpt is required" })
 
-        // userID check
-        if (!validate.isValidField(userId))
-            return res.status(400).send({ status: false, message: "UserId is required" })
-
-        let userIDcheck = await userModel.findOne({ userId: userId })
-        if (validate.isValidRequestBody(userIDcheck)) {
-            return res.send({ message: `${userId} UserID not found` })
-        }
+       
 
         // ISBN check
         if (!validate.isValidField(ISBN))
@@ -128,7 +133,7 @@ const getDataByParams = async (req, res) => {
     }
 }
 
-// ==>
+// delete Book
 const deleteBook = async function (req, res) {
     try {
         let bookIdToBeDeleted = req.params.bookId
@@ -141,6 +146,12 @@ const deleteBook = async function (req, res) {
             return res.status(400).send({ status: false, msg: "Book Id is invalid" })
         }
         let isDeletedStatus = await bookModel.findOne({ _id: bookIdToBeDeleted, isDeleted: false });
+
+         //Authorization
+         if(req.authorIdToken != isDeletedStatus.userId){
+            return res.status(400).send({message:"User is not authorized"});
+        }
+
         if (!isDeletedStatus) { //Check whether book-id is present or not
             return res.status(404).send({ status: false, msg: "Book is ALready deleted" })
         }
@@ -173,7 +184,14 @@ const updateBooksById = async function (req, res) {
             return res.status(400).send({ status: false, msg: "Not a valid book Id" })
         }
 
+
+
         let bookIdCheck = await bookModel.findOne({ _id: bookId, isDeleted: false });
+
+         //Authorization
+         if(req.authorIdToken != bookIdCheck.userId){
+            return res.status(400).send({message:"User is not authorized"});
+        }
 
         if (!bookIdCheck) {
             return res.status(400).send({ status: false, msg: "Book not found" })
