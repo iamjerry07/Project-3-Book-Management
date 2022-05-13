@@ -21,7 +21,7 @@ const createBook = async function(req, res) {
             return res.status(400).send({ status: false, message: "UserId is required" })
 
         let userIDcheck = await userModel.findOne({ userId: userId })
-        if (validate.isValidRequestBody(userIDcheck)) {
+        if (!validate.isValidRequestBody(userIDcheck)) {
             return res.send({ message: `${userId} UserID not found` })
         }
         //Authorization
@@ -193,10 +193,6 @@ const updateBooksById = async function(req, res) {
 
         if (!bookIdCheck) {
             return res.status(400).send({ status: false, msg: "Book not found" })
-        }
-
-        if (!(req.authorIdToken._id = bookIdCheck.userId)) {
-            return res.status(401).send({ status: false, msg: "Unauthorized  Access" })
         }
 
         let isbnCheck = await bookModel.findOne({ ISBN: data.ISBN })

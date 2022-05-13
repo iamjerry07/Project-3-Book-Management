@@ -25,7 +25,7 @@ router.post('/createBook', middleware.authorization, bookController.createBook);
 router.get('/books', middleware.authorization, bookController.getDataByQuery)
 
 //GET API BY PATHPARAMS
-router.get('/books/:bookId', middleware.authorization, bookController.getDataByParams)
+router.get('/books/:bookId', bookController.getDataByParams)
 
 //Delete Api
 router.delete('/deleteBook/:bookId', middleware.authorization, bookController.deleteBook)
