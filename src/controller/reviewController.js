@@ -59,7 +59,7 @@ const createReview = async function(req, res) {
 
         if (!user)
 
-            return reviewerName = 'Guest'
+            return reviewedBy = 'Guest'
 
         const newData = { bookId, review, rating, reviewedBy, reviewedAt: new Date() }
 
