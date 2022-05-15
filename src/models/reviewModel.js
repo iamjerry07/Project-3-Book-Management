@@ -4,13 +4,13 @@ const ObjectId = mongoose.Schema.Types.ObjectId;
 const reviewSchema = new mongoose.Schema({
     bookId: {
         type: ObjectId,
-        ref: 'books',
+        ref: 'Books',
         required: true
     },
     reviewedBy: {
         type: String,
-        required: true,
         default: 'Guest',
+        required: true,
         trim: true
     },
     reviewedAt: {
@@ -19,12 +19,13 @@ const reviewSchema = new mongoose.Schema({
     },
     rating: {
         type: Number,
-        minLength: 1,
-        maxLength: 5,
+        min: 1,
+        max: 5,
         required: true
     },
     review: {
         type: String,
+        trim: true
     },
 
     isDeleted: {
@@ -35,6 +36,46 @@ const reviewSchema = new mongoose.Schema({
 
 module.exports = mongoose.model('Review', reviewSchema);
 
+// const mongoose = require('mongoose')
+
+// const ObjectId = mongoose.Schema.Types.ObjectId
+
+// const reviewModel = new mongoose.Schema({
+
+
+//     bookId: {
+//         type: ObjectId,
+//         required: true,
+//         ref: "Book"
+//     },
+//     reviewedBy: {
+//         type: String,
+//         required: true,
+//         default: "Guest",
+//         trim: true
+
+//     },
+//     reviewedAt: {
+//         type: Date,
+//         required: true
+//     },
+//     rating: {
+//         type: Number,
+//         min: 1,
+//         max: 5,
+//         required: true
+//     },
+//     review: {
+//         type: String,
+//         trim: true
+//     },
+//     isDeleted: {
+//         type: Boolean,
+//         default: false
+//     },
+// })
+
+// module.exports = mongoose.model("review", reviewModel)
 // {
 //     bookId: { ObjectId, mandatory, refs to book model },
 //     reviewedBy: {

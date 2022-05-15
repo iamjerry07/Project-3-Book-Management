@@ -182,12 +182,10 @@ const updateBooksById = async function(req, res) {
             return res.status(400).send({ status: false, msg: "Not a valid book Id" })
         }
 
-
-
         let bookIdCheck = await bookModel.findOne({ _id: bookId, isDeleted: false });
 
         //Authorization
-        if (req.authorIdToken != bookIdCheck.userId) {
+        if (!(req.authorIdToken._id = bookIdCheck.userId)) {
             return res.status(400).send({ message: "User is not authorized" });
         }
 

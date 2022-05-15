@@ -4,7 +4,6 @@ const bookModel = require("../models/bookModel");
 const userModel = require("../models/userModel");
 const reviewModel = require("../models/reviewModel");
 
-
 const createReview = async function(req, res) {
     try {
         let data = req.body
@@ -14,7 +13,7 @@ const createReview = async function(req, res) {
             return res.status(400).send({ status: false, msg: "Data is required" })
 
 
-        let bookId = req.params.bookId
+        const bookId = req.params.bookId
 
         if (!validate.isValidField(bookId))
 
@@ -44,34 +43,50 @@ const createReview = async function(req, res) {
 
             return res.status(400).send({ status: false, msg: "Rating field is missing" })
 
+        // if (!validate.isValidField(reviewedBy))
 
-        if (!validate.isValidField(reviewedBy))
-
-            return res.status(400).send({ status: false, msg: "Review's Name is required" })
+        //     return res.status(400).send({ status: false, msg: "Reviewd field is missing" })
 
 
         if (!(data.rating >= 1 && data.rating <= 5))
 
             return res.status(400).send({ status: false, msg: "Rating is invalid" })
 
+        const isBookPresent = await bookModel.findOne({ _id: bookId, isDeleted: false })
 
-        let user = await userModel.findOne({ name: reviewedBy, isDeleted: false })
+        if (!isBookPresent) {
+            return res.status(404).send({ status: false, message: "Book does not exist" })
+        }
 
-        if (!user)
+        data["reviewedAt"] = Date.now()
+        data["bookId"] = bookId
 
-            return reviewedBy = 'Guest'
 
-        const newData = { bookId, review, rating, reviewedBy, reviewedAt: new Date() }
+        // let reviewData = await reviewModel.create(data)
+
+
+        // let book = await bookModel.findByIdAndUpdate(bookId, { $inc: { reviews: 1 } }, { new: true }).lean()
+
+
+        // await reviewModel.find({ bookId: bookId, isDeleted: false })
+        // book["reviewData"] = reviewData
+
+        // return res.status(201).send({ status: true, message: 'Success', data: book })
+
+        const update = await bookModel.findOneAndUpdate({ _id: bookId, isDeleted: false }, { $inc: { reviews: 1 } }, { new: true, upsert: true });
+
+        const newData = { bookId, review, rating, reviewedBy, reviewedAt: new Date() };
+
 
         const Review = await reviewModel.create(newData);
 
-        const update = await bookModel.findOneAndUpdate({ _id: bookId, isDeleted: false }, { $inc: { reviews: 1 } }, { new: true });
+        return res.status(201).send({ status: true, message: "Review created successfully", data: { update, review: Review } })
 
-        return res.status(201).send({ status: true, message: "Review created successfully", data: { update, Review } })
 
     } catch (error) {
 
         res.status(500).send({ status: false, message: error.message })
     }
 }
+
 module.exports.createReview = createReview
