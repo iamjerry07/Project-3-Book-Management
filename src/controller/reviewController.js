@@ -4,6 +4,7 @@ const bookModel = require("../models/bookModel");
 const userModel = require("../models/userModel");
 const reviewModel = require("../models/reviewModel");
 
+
 const createReview = async function(req, res) {
     try {
         let data = req.body
@@ -88,6 +89,8 @@ const createReview = async function(req, res) {
         res.status(500).send({ status: false, message: error.message })
     }
 }
+
+
 const deleteReviewById = async(req,res)=>{
     try{
 
@@ -140,7 +143,7 @@ const deleteReviewById = async(req,res)=>{
         let deletetheReview = await reviewModel.findOneAndUpdate({_id : reviewId}, {$set : {isDeleted : true}, deletedAt : Date.now()}, {new : true, upsert : true})
         
         if(deletetheReview){
-         await book.findOneAndUpdate({_id : bookId}, {$inc : {reviews : -1}}, {new : true, upsert : true})
+         await bookModel.findOneAndUpdate({_id : bookId}, {$inc : {reviews : -1}}, {new : true, upsert : true})
         }
 
         return res.status(200).send({status : true, message : 'review has been deleted', data : deletetheReview})
