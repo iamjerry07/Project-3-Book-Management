@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const ObjectId= mongoose.Schema.Types.ObjectId
+const ObjectId = mongoose.Schema.Types.ObjectId
 const bookSchema = new mongoose.Schema({
 
     title: {
@@ -28,32 +28,31 @@ const bookSchema = new mongoose.Schema({
     category: {
         type: String,
         required: true,
-        trim: true 
+        trim: true
     },
     subcategory: {
         type: String,
         required: true,
         trim: true
     },
-    reviews:{
-        type:Number,
-        default:0,
-        comment:Number
+    reviews: {
+        type: Number,
+        default: 0,
+        comment: Number
     },
-    deletedAt:{
-        type:Date
+    deletedAt: {
+        type: Date
     },
-    isDeleted:{
-        type:Boolean,
-        default:false
+    isDeleted: {
+        type: Boolean,
+        default: false
     },
-    releasedAt:{
-        type:String,
-        required:true,
+    releasedAt: {
+        type: String,
+        required: true,
         trim: true
-        
+
     }
-},
- { timestamps: true });
+}, { timestamps: true });
 
 module.exports = mongoose.model('Books', bookSchema);

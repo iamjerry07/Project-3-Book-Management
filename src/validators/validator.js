@@ -34,4 +34,23 @@ const isValidObjectId = function(ObjectId) {
 const isValidISBN = function(ISBN) {
     return (/^(?:ISBN(?:-13)?:?\ )?(?=[0-9]{13}$|(?=(?:[0-9]+[-\ ]){4})[-\ 0-9]{17}$)97[89][-\ ]?[0-9]{1,5}[-\ ]?[0-9]+[-\ ]?[0-9]+[-\ ]?[0-9]$/.test(ISBN));
 }
-module.exports = { isValidField, isValidRequestBody, isValidEmail, isValidMobileNo, isValidURL, isValidObjectId, isValidISBN };
+const isValidReviewerName = function(value) {
+    if (typeof value === 'number') return false
+    return true
+}
+const isValidRating = function isInteger(value) {
+    return value % 1 == 0;
+}
+
+module.exports = {
+    isValidField,
+    isValidRequestBody,
+    isValidEmail,
+    isValidMobileNo,
+    isValidURL,
+    isValidObjectId,
+    isValidISBN,
+    isValidReviewerName,
+    isValidRating
+
+};
