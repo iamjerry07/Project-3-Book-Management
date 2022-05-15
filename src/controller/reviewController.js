@@ -40,9 +40,9 @@ const createReview = async function(req, res) {
             return res.status(400).send({ status: false, msg: "Review field is missingg" })
 
 
-        if (!validate.isValidField(rating))
+        if (!validate.isValidField(rating) || typeof rating != 'number')
 
-            return res.status(400).send({ status: false, msg: "Rating field is missing" })
+            return res.status(400).send({ status: false, msg: "rating field must be number and cannot be empty" })
 
         // if (!validate.isValidField(reviewedBy))
 
@@ -74,18 +74,68 @@ const createReview = async function(req, res) {
 
         // return res.status(201).send({ status: true, message: 'Success', data: book })
 
-        const update = await bookModel.findOneAndUpdate({ _id: bookId, isDeleted: false }, { $inc: { reviews: 1 } }, { new: true, upsert: true });
+        const update = await bookModel.findOneAndUpdate({ _id: bookId, isDeleted: false }, { $inc: { reviews: 1 } }, { new: true, upsert: true }).select({__v :0});
 
         const newData = { bookId, review, rating, reviewedBy, reviewedAt: new Date() };
 
+        let toUpdate = update.toObject()
+        toUpdate.review = await reviewModel.create(newData);
 
-        const Review = await reviewModel.create(newData);
-
-        return res.status(201).send({ status: true, message: "Review created successfully", data: { update, review: Review } })
+        return res.status(201).send({ status: true, message: "Review created successfully", data: toUpdate })
 
 
     } catch (error) {
 
+        res.status(500).send({ status: false, message: error.message })
+    }
+}
+
+
+let updateReview = async (req, res) => {
+    try {
+        let bookId = req.params.bookId
+        let reviewId = req.params.reviewId
+
+        if (!validate.isValidObjectId(bookId)) return res.status(400).send({ status: false, message: "invalid bookId" })
+        if (!validate.isValidObjectId(reviewId)) return res.status(400).send({ status: false, message: "invalid reviewId" })
+
+        let data = req.body
+        let { review, rating, reviewedBy } = data
+
+        if (!validate.isValidRequestBody(data)) return res.status(400).send({ status: false, message: "No data to update" })
+
+        let findBook = await bookModel.findOne({ _id: bookId, isDeleted: false })
+        if (!validate.isValidField(findBook)) return res.status(404).send({ status: false, message: "Book doesn't exist" })
+
+        let findReview = await reviewModel.findOne({ _id: reviewId, isDeleted: false })
+        if (!validate.isValidField(findReview)) return res.status(404).send({ status: false, message: "Review doesn't exist" })
+
+        let updateData = {}
+
+        if (!review &&  !rating && !reviewedBy) return  res.status(400).send({ status: false, message: "provide correct data to update" })
+
+            if (review) {
+                if (!validate.isValidField(review) || typeof review == 'number') return res.status(400).send({ status: false, message: "review must be a type string and cannot be empty" })
+                updateData.review = review
+            }
+            if (rating) {
+                if (!validate.isValidNumber(rating) || typeof rating != 'number' || !(rating >= 1 && rating <=5 )) return res.status(400).send({ status: false, message: "rating must be a type number and should be between 1 - 5" })
+                updateData.rating = rating
+            } 
+            if (reviewedBy) {
+                if (!validate.isValidField(reviewedBy) || typeof reviewedBy == 'number') return res.status(400).send({ status: false, message: "reviewer's name must be a type string and cannot be empty" })
+                updateData.reviewedBy = reviewedBy 
+            }
+            console.log(updateData)
+            let findAndUpdate = await reviewModel.findOneAndUpdate({ _id: reviewId }, updateData, { new: true })
+            let convertIntoObject = findBook.toObject()
+
+            convertIntoObject.reviewsData = findAndUpdate
+
+            return res.status(200).send({ status: true, message: "Sucessfully updated", data: convertIntoObject })
+        
+    }
+    catch (error) {
         res.status(500).send({ status: false, message: error.message })
     }
 }
@@ -97,22 +147,11 @@ const deleteReviewById = async(req,res)=>{
         let bookId = req.params.bookId
         let reviewId = req.params.reviewId
 
-        if(!bookId){
-            return res.status(400).send({status : false, message : 'bookId is not present'})
-        }
-
-        let validateBookId = mongoose.isValidObjectId(bookId)
-
-        if(!validateBookId){
+        if(!mongoose.isValidObjectId(bookId)){
            return res.status(400).send({status : false, message : 'this is not a valid book Id'})
         }
 
-        if(!reviewId){
-            return res.status(400).send({status : false, message : 'reviewId is not present'})
-        }
-
-        let validatereviewId = mongoose.isValidObjectId(reviewId)
-        if(!validatereviewId){
+        if(!mongoose.isValidObjectId(reviewId)){
            return res.status(400).send({status : false, message : 'this is not a valid review Id'})
         }
         
@@ -154,3 +193,4 @@ const deleteReviewById = async(req,res)=>{
 }
 module.exports.deleteReviewById = deleteReviewById
 module.exports.createReview = createReview
+module.exports.updateReview = updateReview

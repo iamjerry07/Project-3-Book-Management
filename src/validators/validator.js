@@ -42,6 +42,14 @@ const isValidRating = function isInteger(value) {
     return value % 1 == 0;
 }
 
+const isValidNumber = function(value) {
+    if (typeof value === 'undefined' || value === null) return false;
+
+    if (typeof value === 'number' && value.length === 0) return false;
+
+    return true;
+};
+
 module.exports = {
     isValidField,
     isValidRequestBody,
@@ -51,6 +59,6 @@ module.exports = {
     isValidObjectId,
     isValidISBN,
     isValidReviewerName,
-    isValidRating
-
+    isValidRating,
+    isValidNumber
 };

@@ -58,7 +58,7 @@ const createBook = async function (req, res) {
             return res.status(400).send({ status: false, message: "category is required" })
 
         // subcategory check
-        if (!validate.isValidField(subcategory))
+        if (!validate.isValidField(subcategory) && typeof subcategory != 'array')
             return res.status(400).send({ status: false, message: "subcategory is required" })
 
         // releasedAt check
@@ -85,24 +85,18 @@ const getDataByQuery = async (req, res) => {
         let queryData = req.query
         let { userId, category, subcategory } = queryData
 
-        if (!validate.isValidRequestBody(queryData))
-            return res.status(400).send({ status: false, message: "Data Required" })
 
-        if (userId || category || subcategory) {
             let data = {}
             if (userId) { data.userId = userId }
             if (category) { data.category = category }
             if (subcategory) { data.subcategory = subcategory }
             data.isDeleted = false 
-            console.log(data)
-            let findData = await bookModel.find(data).select({ ISBN: 0, subcategory: 0, isDeleted: 0, createdAt: 0, updatedAt: 0 }).collation({locale:'en', strength:2})
+
+            let findData = await bookModel.find(data).select({ ISBN: 0, subcategory: 0, isDeleted: 0, createdAt: 0, updatedAt: 0 }).collation({locale:'en', strength:2}).sort({title :1})
             if (findData.length===0)
                 return res.status(404).send({ status: false, message: "No data found" })
 
             res.status(200).send({ status: true, message: "Book List", data: findData })
-        }
-        else return res.status(400).send({ status: false, message: "Provide valid Filter to Get Data" })
-
     }
     catch (error) {
         res.status(500).send({ status: false, message: error.message })

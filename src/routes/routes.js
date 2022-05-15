@@ -22,7 +22,7 @@ router.post('/createBook', middleware.authorization, bookController.createBook);
 
 //GET API BY QUERY
 
-router.get('/books', middleware.authorization, bookController.getDataByQuery)
+router.get('/books', bookController.getDataByQuery)
 
 //GET API BY PATHPARAMS
 router.get('/books/:bookId', bookController.getDataByParams)
@@ -41,6 +41,9 @@ router.put('/books/:bookId', middleware.authorization, bookController.updateBook
 //Review API
 
 router.post('/books/:bookId/review', reviewController.createReview);
+
+router.put('/books/:bookId/review/:reviewId', reviewController.updateReview)
+
 router.delete('/books/:bookId/review/:reviewId',reviewController.deleteReviewById);
 
 
