@@ -26,7 +26,7 @@ const createBook = async function (req, res) {
         }
         //Authorization
         if(req.authorIdToken != userId){
-            return res.status(400).send({message:"User is not authorized"});
+            return res.status(401).send({message:"User is not authorized"});
         }
         //Empty body check
         if (!validate.isValidRequestBody(data))
@@ -148,7 +148,7 @@ const deleteBook = async function (req, res) {
 
          //Authorization
          if(req.authorIdToken != isDeletedStatus.userId){
-            return res.status(400).send({message:"User is not authorized"});
+            return res.status(401).send({message:"User is not authorized"});
         }
 
         if (!isDeletedStatus) { //Check whether book-id is present or not
@@ -187,7 +187,7 @@ const updateBooksById = async function (req, res) {
 
          //Authorization
          if(req.authorIdToken != bookIdCheck.userId){
-            return res.status(400).send({message:"User is not authorized"});
+            return res.status(401).send({message:"User is not authorized"});
         }
 
         if (!bookIdCheck) {
