@@ -4,7 +4,6 @@ const userModel = require('../models/userModel')
 const reviewModel = require('../models/reviewModel')
 const mongoose = require('mongoose');
 const moment = require("moment");
-const { locale } = require('moment');
 
 
 // CREATE BOOK API
@@ -14,6 +13,7 @@ const createBook = async function(req, res) {
         try {
 
             let data = req.body
+
             let { title, excerpt, userId, ISBN, category, subcategory, releasedAt } = data
             console.log(data);
             // userID check
@@ -21,7 +21,7 @@ const createBook = async function(req, res) {
                 return res.status(400).send({ status: false, message: "UserId is required" })
 
             let userIDcheck = await userModel.findOne({ userId: data.userId })
-            if (validate.isValidRequestBody(userIDcheck)) {
+            if (!validate.isValidRequestBody(userIDcheck)) {
                 return res.send({ message: `${userId} UserID not found` })
             }
             //Authorization
@@ -185,7 +185,7 @@ const updateBooksById = async function(req, res) {
         let bookIdCheck = await bookModel.findOne({ _id: bookId, isDeleted: false });
 
         //Authorization
-        if (!(req.authorIdToken._id = bookIdCheck.userId)) {
+        if (!(req.authorIdToken = bookIdCheck.userId)) {
             return res.status(401).send({ message: "User is not authorized" });
         }
 
